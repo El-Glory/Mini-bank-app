@@ -1,4 +1,5 @@
 import statusCodes from "../helpers/statusCodes";
+//import User from '../models/user-model'
 
 /**
  * check if user is a staff
@@ -30,9 +31,11 @@ export const staffRole = (req, res, next) => {
  * @returns {json} json
  */
 
-export default adminRole = (req, res, next) => {
-  const { isAdmin, type } = req.decode;
-  if (isAdmin && type === "staff") {
+export const adminRole = (req, res, next) => {
+  const  {type}  = req.body;
+  let isAdmin = true
+  console.log(type)
+  if (type === "admin" && isAdmin === true) {
     next();
   } else {
     return res.status(403).json({
@@ -51,7 +54,7 @@ export default adminRole = (req, res, next) => {
  * @returns {json} json
  */
 // required where admin or staff need access
-export default adminStaffRole = (req, res, next) => {
+export const adminStaffRole = (req, res, next) => {
   const { isAdmin, type } = req.decode;
   if ((!isAdmin && type === "staff") || (isAdmin && type === "staff")) {
     next();
