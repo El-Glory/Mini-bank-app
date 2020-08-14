@@ -7,8 +7,8 @@ const {
 } = require("../middleware/validations");
 const User = require("../models/user-model");
 import bcrypt from "bcryptjs";
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv'
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 class UserController {
   static async signup(req, res) {
@@ -75,12 +75,10 @@ class UserController {
     await User.findOne({ email: req.body.email }).then((user) => {
       //if user not exist than return status 400
       if (!user)
-        return res
-          .status(400)
-          .json({
-            status: statusCodes.badRequest,
-            error: "email or password incorrect",
-          });
+        return res.status(400).json({
+          status: statusCodes.badRequest,
+          error: "email or password incorrect",
+        });
 
       //if user exist than compare password
       //password comes from the user
@@ -90,22 +88,31 @@ class UserController {
         if (err) throw err;
 
         //Create and assign a token
-        const token = jwt.sign({_id:user.id},process.env.TOKEN_SECRET);
-        res.header('auth-token', token).send(token)
+        const token = jwt.sign({ _id: user.id }, process.env.TOKEN_SECRET);
+        res.header("auth-token", token);
+        const { firstName, lastName, email, id } = user;
 
-        //if both match than you can do anything
-        // if (data) {
-        //   return res
-        //     .status(200)
-        //     .json({ status: statusCodes.success, success: "Login success" });
-        // } else {
-        //   return res
-        //     .status(401)
-        //     .json({
-        //       status: statusCodes.success,
-        //       error: "email or password incorrect",
-        //     });
-        // }
+        if (data) {
+          return res.status(200).json({
+            status: statusCodes.success,
+            user: [
+              {
+                token,
+                id,
+                firstName,
+                lastName,
+                email,
+              },
+            ],
+          });
+        } else {
+          return res.status(401).json({
+            status: statusCodes.unAuthorized,
+            error: "email or password incorrect",
+          });
+        }
+
+        // if both match than you can do anything
       });
     });
   }

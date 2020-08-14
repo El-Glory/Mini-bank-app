@@ -16,4 +16,8 @@ const helpers = {
   },
 }
 
+// generateAccountNumber(){
+//   return generateAccountNumber
+// }
+
 export default helpers;
