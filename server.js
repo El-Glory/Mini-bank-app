@@ -34,7 +34,6 @@ app.use(router)
 
 app.get('/', (request, response) => {
   response.status(200).send('The API is working');
-  console.log(request.body)
 });
 
 const server = http.createServer(app);

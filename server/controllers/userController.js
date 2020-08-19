@@ -111,8 +111,6 @@ class UserController {
             error: "email or password incorrect",
           });
         }
-
-        // if both match than you can do anything
       });
     });
   }

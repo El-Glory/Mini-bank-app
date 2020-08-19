@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import statusCodes from '../helpers/statusCodes';
 import dotenv from 'dotenv'
 
-module.exports = function authentication(req, res, next){
+module.exports = function(req, res, next){
     const token = req.header('auth-token');
     if(!token || token === "")
         return res.status(400).json({status: statusCodes.badRequest, error: "Authentication failed"});

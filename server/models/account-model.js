@@ -1,31 +1,30 @@
 import mongoose from "mongoose";
+const Float = require('mongoose-float').loadType(mongoose)
 
-accountSchema = new mongoose.Schema({
+const accountSchema = new mongoose.Schema({
   accountNumber: {
     type: Number,
     required: true,
   },
-  timeStamps: {
+  createdOn: {
       type: Date,
       default: Date.now
-
-  },
+ },
   owner:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: User
+      ref: "User"
   },
   accountType:{
       type: String,
-      default: "savings",
       enum: ["savings","current"]
   },
   accountStatus: {
       type: String,
       default: "active",
-      enum: ["dormant", "active", "draft"]
+      enum: ["active", "dormant", "draft"]
   },
   accountBalance: {
-      type: Number
+      type: Float
   }
 });
 

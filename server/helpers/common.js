@@ -14,10 +14,13 @@ const helpers = {
     const hashedPassword = bcrypt.hashSync(password, salt);
     return hashedPassword;
   },
+
+  generateAccountNumber(){
+    const newAccountNumber = Math.floor(Math.random()* 9000000) + 2550000000;
+    return newAccountNumber
+  }
 }
 
-// generateAccountNumber(){
-//   return generateAccountNumber
-// }
+
 
 export default helpers;
