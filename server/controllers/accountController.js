@@ -17,25 +17,25 @@ class AccountController {
       const { accountType } = req.body;
       console.log(accountType);
 
-      const checkAccount = await Account.findOne({ id: req.user.id });
-      if (checkAccount)
-        return res.status(400).send({
-          status: statusCodes.badRequest,
-          error: "You cannot create more than 1 account",
-        });
+      // const checkAccount = await Account.findOne({ owner: req.user.id });
+      // if (checkAccount)
+      //   return res.status(400).send({
+      //     status: statusCodes.badRequest,
+      //     error: "You cannot create more than 1 account",
+      //   });
 
       const account = new Account({
         accountNumber: utils.generateAccountNumber(),
         createdOn,
-        owner: req.user._id,
+        owner: req.user,
         accountType,
-        accountStatus,
+        //accountStatus,
         accountBalance: 0.0,
       });
       account.save();
       const {
         accountNumber,
-        accountStatus,
+        //accountStatus,
         accountBalance,
         createdOn,
         owner,
@@ -47,7 +47,7 @@ class AccountController {
             accountNumber: accountNumber,
             owner,
             type: accountType,
-            accountStatus: accountStatus,
+            // accountStatus: accountStatus,
             balance: accountBalance,
             created: createdOn,
           },
@@ -80,10 +80,14 @@ class AccountController {
           status: statusCodes.badRequest,
           error: "Account does not Exist!!",
         });
-        //set the accountStatus to the one that best suits me
-      await Account.findOneAndUpdate({accountNumber},{$set:{accountStatus}} ,{
-        new: true,
-      });
+      //set the accountStatus to the one that best suits me
+      await Account.findOneAndUpdate(
+        { accountNumber },
+        { $set: { accountStatus } },
+        {
+          new: true,
+        }
+      );
       return res.status(200).send({
         status: statusCodes.success,
         data: [
@@ -93,6 +97,36 @@ class AccountController {
           },
         ],
       });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ status: statusCodes.serverError, error: "Server Error" });
+    }
+  }
+
+  //DELETE ACCOUNT
+  static async DeleteAccount(req, res) {
+    // const { accountNumber } = req.params;
+
+    try {
+      const accountExist = await Account.findOne({
+        accountNumber: req.params.accountNumber,
+      });
+      if (!accountExist)
+        return res.status(400).json({
+          status: statusCodes.badRequest,
+          error: "Account does not exist",
+        });
+
+      await Account.findOneAndDelete({
+        accountNumber: req.params.accountNumber,
+      });
+      return res
+        .status(200)
+        .json({
+          status: statusCodes.success,
+          message: "Account successfully deleted",
+        });
     } catch (error) {
       return res
         .status(500)

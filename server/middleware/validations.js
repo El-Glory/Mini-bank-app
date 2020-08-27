@@ -34,6 +34,8 @@ const changeAccountStatus = (data) => {
   return schema.validate(data);
 };
 
+
+
 module.exports.signupValidation = signupValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.createAccount = createAccount;
