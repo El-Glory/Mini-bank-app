@@ -1,8 +1,13 @@
 import statusCodes from "../helpers/statusCodes";
 import utils from "../helpers/common";
-import { createAccount, changeAccountStatus } from "../middleware/validations";
+import {
+  createAccount,
+  changeAccountStatus,
+  getAllTransactions,
+} from "../middleware/validations";
 import Account from "../models/account-model";
-//import User from "../models/user-model";
+import Transaction from "../models/transaction-model";
+import User from "../models/user-model";
 
 class AccountController {
   static async createAccount(req, res) {
@@ -24,35 +29,36 @@ class AccountController {
       //     error: "You cannot create more than 1 account",
       //   });
 
-      const account = new Account({
-        accountNumber: utils.generateAccountNumber(),
-        createdOn,
-        owner: req.user,
-        accountType,
-        //accountStatus,
-        accountBalance: 0.0,
-      });
-      account.save();
-      const {
-        accountNumber,
-        //accountStatus,
-        accountBalance,
-        createdOn,
-        owner,
-      } = account;
-      return res.status(201).send({
-        status: statusCodes.created,
-        data: [
-          {
-            accountNumber: accountNumber,
-            owner,
-            type: accountType,
-            // accountStatus: accountStatus,
-            balance: accountBalance,
-            created: createdOn,
-          },
-        ],
-      });
+        const account = new Account({
+          accountNumber: utils.generateAccountNumber(),
+          createdOn,
+          owner: req.user,
+          accountType,
+          //accountStatus,
+          accountBalance: 0.0,
+        });
+        account.save();
+        const {
+          accountNumber,
+          //accountStatus,
+          accountBalance,
+          createdOn,
+          owner,
+        } = account;
+        return res.status(201).send({
+          status: statusCodes.created,
+          data: [
+            {
+              accountNumber: accountNumber,
+              owner,
+              type: accountType,
+              // accountStatus: accountStatus,
+              balance: accountBalance,
+              created: createdOn,
+            },
+          ],
+      })
+      
     } catch (error) {
       return res
         .status(500)
@@ -121,11 +127,44 @@ class AccountController {
       await Account.findOneAndDelete({
         accountNumber: req.params.accountNumber,
       });
+      return res.status(200).json({
+        status: statusCodes.success,
+        message: "Account successfully deleted",
+      });
+    } catch (error) {
       return res
-        .status(200)
-        .json({
-          status: statusCodes.success,
-          message: "Account successfully deleted",
+        .status(500)
+        .json({ status: statusCodes.serverError, error: "Server Error" });
+    }
+  }
+
+  static async getTransactions(req, res) {
+    const { error } = getAllTransactions(req.params);
+    if (error)
+      return res.status(400).json({
+        status: statusCodes.badRequest,
+        error: error.details[0].message,
+      });
+
+    try {
+      const accountExist = await Account.findOne({
+        accountNumber: req.params.accountNumber,
+      });
+      if (!accountExist)
+        return res.status(404).json({
+          status: statusCodes.badRequest,
+          error: "Account does not exist",
+        });
+
+     // const { accountNumber } = req.params;
+
+      Transaction.find({ accountNumber: req.params.accountNumber },
+        (err, transactions) => {
+          if (err)
+            return res
+              .status(404)
+              .json({ status: statusCodes.badRequest, error: "No record found" });
+          if (transactions) return res.status(200).send({status: statusCodes. success,transactions});
         });
     } catch (error) {
       return res

@@ -9,6 +9,7 @@ const User = require("../models/user-model");
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import Account from "../models/account-model";
 
 class UserController {
   static async signup(req, res) {
@@ -113,6 +114,51 @@ class UserController {
         }
       });
     });
+  }
+
+  static async getAccounts(req, res) {
+    try {
+      // const emailExist = await User.findOne({ email: req.params.email })
+      // if(!emailExist) return res.status(404).json({status:statusCodes.notFound, error:"Email does not exist"})
+
+      User.findOne({ email: req.params.email }).then((user) => {
+        if (!user)
+          return res.status(404).json({
+            status: statusCodes.notFound,
+            error: "Email does not exist",
+          });
+
+        Account.findById(req.account, (err, account) => {
+          if (err)
+            return res.status(404).json({
+              status: statusCodes.notFound,
+              error: "No transaction record found",
+            });
+          console.log(req.user._id);
+
+         // const { type, accountNumber, accountBalance, id } = account;
+          if (account)
+            return res.status(200).send({
+              status: statusCodes.success,
+              account: {
+                // createdOn,
+                // accountType: type,
+                // accountNumber,
+                // accountBalance,
+                // id,
+              },
+            });
+        });
+      });
+
+      // Account.findOne({email: req.params.email}, (err, account)=> {
+
+      // })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ status: statusCodes.serverError, error: "Server Error" });
+    }
   }
 }
 

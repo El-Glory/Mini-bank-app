@@ -34,9 +34,23 @@ const changeAccountStatus = (data) => {
   return schema.validate(data);
 };
 
+const debitAccount = (data) => {
+  const schema = Joi.object({
+    amount: Joi.number().required(),
+  });
+  return schema.validate(data);
+};
 
+const getAllTransactions = (data) => {
+  const schema = Joi.object({
+    accountNumber: Joi.number().required()
+  })
+  return schema.validate(data);
+}
 
 module.exports.signupValidation = signupValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.createAccount = createAccount;
-module.exports.changeAccountStatus = changeAccountStatus
+module.exports.changeAccountStatus = changeAccountStatus;
+module.exports.debitAccount = debitAccount;
+module.exports.getAllTransactions = getAllTransactions;
