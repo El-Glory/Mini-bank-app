@@ -12,6 +12,6 @@ module.exports = function(req, res, next){
             req.user = verified
             next()
         } catch (error) {
-            return response.status(401).json({ status: statusCodes.unAuthorized, error: 'Invalid token!' });         
+            return res.status(401).json({ status: statusCodes.unAuthorized, error: 'Invalid token!' });         
         }
 }

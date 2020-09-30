@@ -29,36 +29,35 @@ class AccountController {
       //     error: "You cannot create more than 1 account",
       //   });
 
-        const account = new Account({
-          accountNumber: utils.generateAccountNumber(),
-          createdOn,
-          owner: req.user,
-          accountType,
-          //accountStatus,
-          accountBalance: 0.0,
-        });
-        account.save();
-        const {
-          accountNumber,
-          //accountStatus,
-          accountBalance,
-          createdOn,
-          owner,
-        } = account;
-        return res.status(201).send({
-          status: statusCodes.created,
-          data: [
-            {
-              accountNumber: accountNumber,
-              owner,
-              type: accountType,
-              // accountStatus: accountStatus,
-              balance: accountBalance,
-              created: createdOn,
-            },
-          ],
-      })
-      
+      const account = new Account({
+        accountNumber: utils.generateAccountNumber(),
+        createdOn,
+        owner: req.user,
+        accountType,
+        //accountStatus,
+        accountBalance: 0.0,
+      });
+      account.save();
+      const {
+        accountNumber,
+        //accountStatus,
+        accountBalance,
+        createdOn,
+        owner,
+      } = account;
+      return res.status(201).send({
+        status: statusCodes.created,
+        data: [
+          {
+            accountNumber: accountNumber,
+            owner,
+            type: accountType,
+            // accountStatus: accountStatus,
+            balance: accountBalance,
+            created: createdOn,
+          },
+        ],
+      });
     } catch (error) {
       return res
         .status(500)
@@ -156,15 +155,128 @@ class AccountController {
           error: "Account does not exist",
         });
 
-     // const { accountNumber } = req.params;
+      // const { accountNumber } = req.params;
 
-      Transaction.find({ accountNumber: req.params.accountNumber },
+      Transaction.find(
+        { accountNumber: req.params.accountNumber },
         (err, transactions) => {
           if (err)
+            return res.status(404).json({
+              status: statusCodes.badRequest,
+              error: "No record found",
+            });
+          if (transactions)
             return res
-              .status(404)
-              .json({ status: statusCodes.badRequest, error: "No record found" });
-          if (transactions) return res.status(200).send({status: statusCodes. success,transactions});
+              .status(200)
+              .send({ status: statusCodes.success, transactions });
+        }
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ status: statusCodes.serverError, error: "Server Error" });
+    }
+  }
+
+  static async getASpecificAccount(req, res) {
+    try {
+      const accountExist = await Account.findOne({
+        accountNumber: req.params.accountNumber,
+      });
+      if (!accountExist)
+        return res.status(404).json({
+          status: statusCodes.notFound,
+          error: "Account does not exist",
+        });
+
+      const { accountNumber } = req.params;
+
+      Account.findOne({ accountNumber })
+        .populate("owner")
+        .exec((err, account) => {
+          if (err)
+            return res.status(400).json({
+              status: statusCodes.badRequest,
+              error: "No record found",
+            });
+
+          const {
+            createdOn,
+            accountNumber,
+            accountType,
+            accountStatus,
+            accountBalance,
+            owner,
+          } = account;
+          if (account)
+            return res.status(200).send({
+              status: statusCodes.success,
+              data: [
+                {
+                  createdOn,
+                  accountNumber,
+                  ownerEmail: owner.email,
+                  type: accountType,
+                  status: accountStatus,
+                  balance: accountBalance,
+                },
+              ],
+            });
+          console.log(account.owner);
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ status: statusCodes.serverError, error: "Server Error" });
+    }
+  }
+
+  static async getAllAccounts(req, res) {
+    try {
+      const { accountStatus } = req.query;
+
+      if (accountStatus) {
+        Account.find({ accountStatus })
+          .populate("owner", "email")
+          .exec((err, account) => {
+            if (err)
+              return res.status(400).json({
+                status: statusCodes.badRequest,
+                error: "No record found",
+              });
+
+            if (account)
+              //console.log()
+              return res.status(200).send({
+                status: statusCodes.success,
+                account,
+              });
+          });
+      }
+      
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ status: statusCodes.serverError, error: "Server Error" });
+    }
+
+    try {
+      Account.find()
+        .populate("owner", "email")
+        .exec((err, account) => {
+          if (err)
+            return res.status(400).json({
+              status: statusCodes.badRequest,
+              error: "No record found",
+            });
+
+          if (account)
+            //console.log()
+
+            return res.status(200).send({
+              status: statusCodes.success,
+              account,
+            });
         });
     } catch (error) {
       return res

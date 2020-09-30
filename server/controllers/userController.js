@@ -128,25 +128,32 @@ class UserController {
             error: "Email does not exist",
           });
 
-        Account.findById(req.account, (err, account) => {
+          //console.log(user)
+
+        Account.findOne({accountNumber:"2556407830"}, (err, account) => {
+          console.log(accountNumber)
           if (err)
             return res.status(404).json({
               status: statusCodes.notFound,
               error: "No transaction record found",
             });
-          console.log(req.user._id);
 
-         // const { type, accountNumber, accountBalance, id } = account;
+            //console.log(account)
+          //console.log(req.user._id);
+
+        //const { createdOn, accountNumber, accountBalance, accountType, accountStatus } = account;
           if (account)
+          //console.log(account)
             return res.status(200).send({
               status: statusCodes.success,
-              account: {
-                // createdOn,
-                // accountType: type,
-                // accountNumber,
-                // accountBalance,
-                // id,
-              },
+              account
+              // : {
+              //   createdOn,
+              //   accountNumber,
+              //   type: accountType,
+              //   status: accountStatus,
+              //   balance: accountBalance
+              //}
             });
         });
       });

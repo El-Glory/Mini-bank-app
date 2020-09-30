@@ -11,6 +11,10 @@ const router = express.Router();
 router.post(`${API_VERSION}/accounts`, verify,  AccountController.createAccount);
 router.patch(`${API_VERSION}/account/:accountNumber`,verify, adminStaffRole, AccountController.AccountStatus);
 router.delete(`${API_VERSION}/accounts/:accountNumber`, verify, adminStaffRole, AccountController.DeleteAccount)
-router.get(`${API_VERSION}/accounts/:accountNumber/transactions`, verify, AccountController.getTransactions)
+router.get(`${API_VERSION}/accounts/:accountNumber/transactions`, verify, AccountController.getTransactions);
+router.get(`${API_VERSION}/accounts/:accountNumber`,verify, adminStaffRole, AccountController.getASpecificAccount)
+router.get(`${API_VERSION}/accounts/`, verify, adminStaffRole, AccountController.getAllAccounts);
+//router.get(`${API_VERSION}/accounts/`, verify, adminStaffRole, AccountController.getAccountByStatus);
+
 
 export default router;

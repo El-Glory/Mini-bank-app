@@ -58,11 +58,11 @@ export const adminRole = (req, res, next) => {
 // required where admin or staff need access
 export const adminStaffRole = (req, res, next) => {
   User.findById(req.user, function (err, user) {
-    console.log(req.user);
-    console.log(user.isAdmin);
+    //console.log(req.user);
+    //console.log(user);
     if (
       (user.type === "staff" && user.isAdmin === false) ||
-      (user.type === "admin" && user.isAdmin === true)
+      (user.type === "staff" && user.isAdmin === true)
     ) {
       next();
     } else {
