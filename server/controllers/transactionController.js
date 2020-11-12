@@ -174,30 +174,38 @@ class TransactionController {
   }
   // GET A SPECIFIC TRANSACTION
   static async getATransaction(req, res) {
-    
-
-    Transaction.findById(  req.params.id , (err, transaction) => {
-      
+    Transaction.findById(req.params.id, (err, transaction) => {
       if (err)
         return res.status(404).json({
           status: statusCodes.notFound,
           error: "No transaction record found",
         });
-       // const transaction = Transaction;
-        const {createdOn, type, accountNumber, amount, oldBalance, newBalance, id} = transaction;
+      // const transaction = Transaction;
+      const {
+        createdOn,
+        type,
+        accountNumber,
+        amount,
+        oldBalance,
+        newBalance,
+        id,
+      } = transaction;
       if (transaction)
-        return res.status(200).send({ status: statusCodes.success, transaction : [{
-          transactionId: id,
-          createdOn,
-          type,
-          accountNumber,
-          amount,
-          oldBalance,
-          newBalance,
-          type
-        }]});
-
-     
+        return res.status(200).send({
+          status: statusCodes.success,
+          transaction: [
+            {
+              transactionId: id,
+              createdOn,
+              type,
+              accountNumber,
+              amount,
+              oldBalance,
+              newBalance,
+              type,
+            },
+          ],
+        });
     });
   }
 }

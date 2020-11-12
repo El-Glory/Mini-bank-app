@@ -237,7 +237,7 @@ class AccountController {
 
       if (accountStatus) {
         Account.find({ accountStatus })
-          .populate("owner", "email")
+          .populate("owner", "email-_id")
           .exec((err, account) => {
             if (err)
               return res.status(400).json({
@@ -262,7 +262,7 @@ class AccountController {
 
     try {
       Account.find()
-        .populate("owner", "email")
+        .populate("owner", "email-_id")
         .exec((err, account) => {
           if (err)
             return res.status(400).json({
